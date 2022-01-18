@@ -268,7 +268,7 @@ use HeadlessChromium\BrowserFactory;
 
         // Store data
         
-        if($company_name){
+        if(!$company_name){
             createLog($key,$number,'Headless issue');
         }
         else{
