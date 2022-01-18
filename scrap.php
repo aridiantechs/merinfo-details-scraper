@@ -387,7 +387,7 @@ use HeadlessChromium\BrowserFactory;
 
         foreach(array_unique($numbers_array) as $key => $address){
 
-            if($key !== 10)
+            if($key !== 100)
                 getData($address,$key,$file_name);
             else
                 die();
