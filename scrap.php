@@ -184,14 +184,14 @@ use HeadlessChromium\BrowserFactory;
 
             if($found){
 
-                createLog($key,$number,$page_link,true);
+                createLog($key,trim($original_number),$page_link,true);
 
                 $result = get_web_page($page_link);
                 $html   = $result['content'];
                 $dom    = str_get_html($html);
 
                 if(gettype($dom) == 'boolean' || $dom == ''){
-                    createLog($key,$number,'Second loop error');
+                    createLog($key,trim($original_number),'Second loop error');
                     return;
                 }
 
@@ -209,7 +209,7 @@ use HeadlessChromium\BrowserFactory;
                 $dom    = str_get_html($html);
 
                 if(gettype($dom) == 'boolean' || $dom == ''){
-                    createLog($key,$number,'Phone link error');
+                    createLog($key,trim($original_number),'Phone link error');
                     return;
                 }
 
@@ -247,7 +247,7 @@ use HeadlessChromium\BrowserFactory;
                 //     $living_type = 'bostadsrätt';
                 // }
                 // else{
-                //     createLog($key,$number,'third loop error');
+                //     createLog($key,trim($original_number),'third loop error');
                 //     return;
                 // }
                 
@@ -260,8 +260,8 @@ use HeadlessChromium\BrowserFactory;
         }
         else{
             
-            createLog($key,$number,'Proxy or Scraper not working');
-            sleep(10);
+            createLog($key,trim($original_number),'Proxy or Scraper not working');
+            // sleep(10);
             return;
         
         }
@@ -269,7 +269,7 @@ use HeadlessChromium\BrowserFactory;
         // Store data
         
         if(!$company_name){
-            createLog($key,$number,'Headless issue');
+            createLog($key,trim($original_number), 'Company name not found');
         }
         else{
 
@@ -292,7 +292,7 @@ use HeadlessChromium\BrowserFactory;
         
         $myfile = fopen('./logs/log.txt', "a") or die("Unable to open file!");
 
-        $txt = $key . ' - ' . $address . ' - ' .  $page_link;
+        $txt = $key . ' - ' . trim($address) . ' - ' .  trim($page_link);
 
         fwrite($myfile, $txt);
         fwrite($myfile, "\n");
@@ -377,7 +377,7 @@ use HeadlessChromium\BrowserFactory;
 
     if (1) {
         
-        $file_name = 'ouput';
+        $file_name = 'output';
         $file = fopen('uploads/'.$file_name.'.txt', "w");
         fclose($file);
 
