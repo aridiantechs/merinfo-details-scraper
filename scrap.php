@@ -208,6 +208,11 @@ use HeadlessChromium\BrowserFactory;
                 $html   = $result['content'];
                 $dom    = str_get_html($html);
 
+                if(gettype($dom) == 'boolean' || $dom == ''){
+                    createLog($key,$number,'Phone link error');
+                    return;
+                }
+
                 $element = $dom->find('meta', 3);
 
                 $csrf = explode('"', $element);
@@ -263,7 +268,7 @@ use HeadlessChromium\BrowserFactory;
 
         // Store data
         
-        if(0){
+        if($company_name){
             createLog($key,$number,'Headless issue');
         }
         else{
