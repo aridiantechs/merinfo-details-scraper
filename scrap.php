@@ -166,7 +166,7 @@ use HeadlessChromium\BrowserFactory;
         $page_link    = '';
         $number_writeable = '';
 
-        if(gettype($dom) !== 'boolean' || $dom !== ''){
+        if(gettype($dom) !== 'boolean' && $dom !== ''){
 
             $found = false;
 
