@@ -30,10 +30,10 @@ use HeadlessChromium\BrowserFactory;
             CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
             CURLOPT_TIMEOUT        => 120,      // timeout on response
             CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
-            // CURLOPT_PROXY          => 'zproxy.lum-superproxy.io',
-            // CURLOPT_PROXYPORT      => '22225',
-            // CURLOPT_PROXYUSERPWD   => 'lum-customer-hl_fa848026-zone-daniel_sahlin_zone-country-se:0xwx5ytxlfcc',
-            // CURLOPT_HTTPPROXYTUNNEL=> 1,
+            CURLOPT_PROXY          => 'zproxy.lum-superproxy.io',
+            CURLOPT_PROXYPORT      => '22225',
+            CURLOPT_PROXYUSERPWD   => 'lum-customer-hl_fa848026-zone-daniel_sahlin_zone-country-se:0xwx5ytxlfcc',
+            CURLOPT_HTTPPROXYTUNNEL=> 1,
         );
         
         $ch      = curl_init( $url );
@@ -72,10 +72,10 @@ use HeadlessChromium\BrowserFactory;
             CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
             CURLOPT_TIMEOUT        => 120,      // timeout on response
             CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
-            // CURLOPT_PROXY          => 'zproxy.lum-superproxy.io',
-            // CURLOPT_PROXYPORT      => '22225',
-            // CURLOPT_PROXYUSERPWD   => 'lum-customer-hl_fa848026-zone-daniel_sahlin_zone-country-se:0xwx5ytxlfcc',
-            // CURLOPT_HTTPPROXYTUNNEL=> 1,
+            CURLOPT_PROXY          => 'zproxy.lum-superproxy.io',
+            CURLOPT_PROXYPORT      => '22225',
+            CURLOPT_PROXYUSERPWD   => 'lum-customer-hl_fa848026-zone-daniel_sahlin_zone-country-se:0xwx5ytxlfcc',
+            CURLOPT_HTTPPROXYTUNNEL=> 1,
             CURLOPT_HTTPHEADER     => array(
                                         'origin: https://www.merinfo.se',
                                         $x_csrf,
@@ -372,7 +372,7 @@ use HeadlessChromium\BrowserFactory;
 
     if (1) {
         
-        $file_name = date("Y-m-d-h-i-sa");
+        $file_name = 'output';
         $file = fopen('uploads/'.$file_name.'.txt', "w");
         fclose($file);
 
