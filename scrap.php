@@ -202,13 +202,20 @@ use HeadlessChromium\BrowserFactory;
                 $address = $dom->find('address', 0)->text();
                 $address = trim(preg_replace('/\s\s+/', ' - ', $address));
 
-                $phone_number_link = $dom->find('.overflow-hidden .hidden-print a', 1)->href;
+
+                $e = $dom->find('.overflow-hidden .hidden-print a', 1);
+                if(isset($e->href))
+                    $phone_number_link = $dom->find('.overflow-hidden .hidden-print a', 1)->href;
+                else{
+                    createLog($key,trim($original_number),'Phone link not found', true);
+                    return;
+                }
 
                 $result = get_web_page($phone_number_link);
                 $html   = $result['content'];
                 $dom    = str_get_html($html);
 
-                if(gettype($dom) == 'boolean' || $dom == ''){
+                if(gettype($dom) == 'boolean'){
                     createLog($key,trim($original_number),'Phone link error');
                     return;
                 }
