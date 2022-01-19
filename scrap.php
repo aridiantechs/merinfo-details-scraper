@@ -50,8 +50,6 @@ use HeadlessChromium\BrowserFactory;
         return $header;
     }
 
-
-
     function getOperatorInfo( $number , $csrf , $id )
     {
         $x_csrf = 'x-csrf-token:' . $csrf;
@@ -118,7 +116,6 @@ use HeadlessChromium\BrowserFactory;
         
     }
 
-
     function headLessRequest($url){
 
         $browserCommand = 'google-chrome';
@@ -140,7 +137,6 @@ use HeadlessChromium\BrowserFactory;
         }
     }
 
-
     function putTestHtml($html = '')
     {
         file_put_contents("uploads/html.txt", "");
@@ -150,7 +146,6 @@ use HeadlessChromium\BrowserFactory;
         fwrite($myfile, $txt);
         fclose($myfile);
     }
-
 
     function getData($number,$key,$file_name)
     {
@@ -198,21 +193,21 @@ use HeadlessChromium\BrowserFactory;
                 $result = '';
                 
                 $e = $dom->find('.header-name a', 0);
-                if(isset($e->text()))
+                if(isset($e->innertext))
                     $company_name = $e->text();
                 else
                     $company_name = '';
 
                 
                 $e = $dom->find('.header-name p', 0);
-                if(isset($e->text()))
+                if(isset($e->innertext))
                     $company_number = $e->text();
                 else
                     $company_number = '';
 
                 
                 $e = $dom->find('address', 0);
-                if(isset($e->text()))
+                if(isset($e->innertext))
                     $address = $e->text();
                 else
                     $address = '';
