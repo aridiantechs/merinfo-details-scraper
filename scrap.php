@@ -401,7 +401,7 @@ use HeadlessChromium\BrowserFactory;
         $file = fopen('uploads/'.$file_name.'.txt', "w");
         fclose($file);
 
-        $numbers = fopen("source/100k-3.txt", "r") or die("Unable to open file!");
+        $numbers = fopen("source/100k-4.txt", "r") or die("Unable to open file!");
 
         $numbers_array = [];
 
