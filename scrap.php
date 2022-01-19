@@ -196,10 +196,28 @@ use HeadlessChromium\BrowserFactory;
                 }
 
                 $result = '';
+                
+                $e = $dom->find('.header-name a', 0);
+                if(isset($e->text()))
+                    $company_name = $e->text();
+                else
+                    $company_name = '';
 
-                $company_name = $dom->find('.header-name a', 0)->text();
-                $company_number = $dom->find('.header-name p', 0)->text();
-                $address = $dom->find('address', 0)->text();
+                
+                $e = $dom->find('.header-name p', 0);
+                if(isset($e->text()))
+                    $company_number = $e->text();
+                else
+                    $company_number = '';
+
+                
+                $e = $dom->find('address', 0);
+                if(isset($e->text()))
+                    $address = $e->text();
+                else
+                    $address = '';
+
+                
                 $address = trim(preg_replace('/\s\s+/', ' - ', $address));
 
 
