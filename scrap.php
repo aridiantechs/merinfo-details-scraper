@@ -398,8 +398,8 @@ use HeadlessChromium\BrowserFactory;
     if (1) {
         
         $file_name = 'output';
-        $file = fopen('uploads/'.$file_name.'.txt', "w");
-        fclose($file);
+        // $file = fopen('uploads/'.$file_name.'.txt', "w");
+        // fclose($file);
 
         $numbers = fopen("source/56k-6.txt", "r") or die("Unable to open file!");
 
