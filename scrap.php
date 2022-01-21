@@ -397,9 +397,9 @@ use HeadlessChromium\BrowserFactory;
 
     if (1) {
         
-        $file_name = 'output';
-        // $file = fopen('uploads/'.$file_name.'.txt', "w");
-        // fclose($file);
+        $file_name = 'output-scraper5';
+        $file = fopen('uploads/'.$file_name.'.txt', "w");
+        fclose($file);
 
         $numbers = fopen("source/100k.txt", "r") or die("Unable to open file!");
 
