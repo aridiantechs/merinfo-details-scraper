@@ -397,11 +397,11 @@ use HeadlessChromium\BrowserFactory;
 
     if (1) {
         
-        $file_name = 'output-scraper5';
+        $file_name = 'output';
         $file = fopen('uploads/'.$file_name.'.txt', "w");
         fclose($file);
 
-        $numbers = fopen("source/100k.txt", "r") or die("Unable to open file!");
+        $numbers = fopen("source/input.txt", "r") or die("Unable to open file!");
 
         $numbers_array = [];
 
@@ -412,7 +412,7 @@ use HeadlessChromium\BrowserFactory;
 
         foreach(array_unique($numbers_array) as $key => $address){
 
-            // if($key > 344)
+            if($key <= 346)
                 getData($address,$key,$file_name);
             // else
                 // die();
