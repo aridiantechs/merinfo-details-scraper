@@ -9,19 +9,6 @@ require_once (__DIR__ . '/vendor/autoload.php');
 use Rct567\DomQuery\DomQuery;
 
 
-// $servername = "localhost";
-// $username = "aridtlpn_kundkontakter_user";
-// $password = "A)Ro#7Ups_ZN";
-// $dbname = "aridtlpn_kundkontakter";
-
-// Create connection
-// $conn = new mysqli($servername, $username, $password, $dbname);
-// // Check connection
-// if ($conn->connect_error) {
-//   die("Connection failed: " . $conn->connect_error);
-// }
-
-
     function get_web_page( $url )
     {
         $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';

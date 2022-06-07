@@ -2,6 +2,7 @@
 
 ini_set('display_errors', 1);
 ini_set('max_execution_time', 0);
+ini_set('memory_limit', -1);
 error_reporting(E_ALL);
 
 include_once('simple_html_dom.php');
@@ -82,19 +83,17 @@ use HeadlessChromium\BrowserFactory;
 
         );
         
-        $ch = curl_init( 'https://www.merinfo.se/ajax/operator' );
+        $ch = curl_init( 'https://www.merinfo.se/api/v1/phones/'.$id.'/operators' );
         curl_setopt_array( $ch, $options );
 
         $x_csrf = 'x-csrf-token:' . $csrf;
 
-        $number_array['phonenumber'] = $number;
-        $number_array['id'] = 340741;
+        $number_array['phonenumber'] = $id;
+        $number_array['id'] = $id;
         $json_data = json_encode($number_array);
 
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-
-        // print_r($ch);die();
 
         $result = curl_exec( $ch );
         $err     = curl_errno( $ch );
@@ -105,13 +104,13 @@ use HeadlessChromium\BrowserFactory;
         $data = json_decode($result, true);
 
         if(is_array($data)){
-            if(array_key_exists('operator', $data))
-                return $data['operator'];
+            if(array_key_exists('data', $data))
+                return $data['data']['operator'];
             else
                 return 'no operator information';
         }
         else{
-            return 'no operator information';
+            return 'no operator info    ';
         }
         
     }
@@ -192,20 +191,28 @@ use HeadlessChromium\BrowserFactory;
 
                 $result = '';
                 
-                $e = $dom->find('.header-name a', 0);
+                $e = $dom->find('span.namn.mb-2', 0);
                 if(isset($e->innertext))
-                    $company_name = $e->text();
+                    $company_name = $e->plaintext;
                 else
                     $company_name = '';
 
                 
-                $e = $dom->find('.header-name p', 0);
+                $e = $dom->find('span.nummer.font-family-serif', 0);
                 if(isset($e->innertext))
                     $company_number = $e->text();
                 else
                     $company_number = '';
 
                 
+
+                $e = $dom->find('span.ort.font-family-serif', 0);
+                if(isset($e->innertext))
+                    $ort = $e->text();
+                else
+                    $ort = '';
+
+
                 $e = $dom->find('address', 0);
                 if(isset($e->innertext))
                     $address = $e->text();
@@ -216,60 +223,67 @@ use HeadlessChromium\BrowserFactory;
                 $address = trim(preg_replace('/\s\s+/', ' - ', $address));
 
 
-                $e = $dom->find('.overflow-hidden .hidden-print a', 1);
-                if(isset($e->href))
-                    $phone_number_link = $dom->find('.overflow-hidden .hidden-print a', 1)->href;
-                else{
-                    createLog($key,trim($original_number),'Phone link not found', true);
-                    return;
+                $phone_number_link = '';
+                foreach($dom->find('.overflow-hidden .hidden-print a') as $e){
+                    if (strpos($e->href, 'telefonnummer') !== false) {
+                        $phone_number_link = $e->href;
+                    }
                 }
 
-                $result = get_web_page($phone_number_link);
-                $html   = $result['content'];
-                $dom    = str_get_html($html);
-
-                if(gettype($dom) == 'boolean'){
-                    createLog($key,trim($original_number),'Phone link error');
-                    return;
-                }
-
-                $element = $dom->find('meta', 3);
-
-                $csrf = explode('"', $element);
-
-                $csrf = $csrf[3] ?? '';
-
-                $numbers = [];
+                
                 $number_writeable = '';
 
-                // echo $id = $dom->find('table tr')->id;
-                foreach($dom->find('table tr') as $key => $element){
+                if(!$phone_number_link)
+                    createLog($key,trim($original_number),'Phone link not found', true);
 
-                    if($key == 0)
-                        continue;
+                else{
 
-                    $number = $element->find('td', 0)->text();
-                    $anvandare = $element->find('td', 1)->text();
-                    $id = $element->id;
-                    $operator = '';
-                    
-                    if($number)
-                        $operator = getOperatorInfo($number, $csrf, $id);
+                    $result = get_web_page($phone_number_link);
+                    $html   = $result['content'];
+                    $dom    = str_get_html($html);
 
-                    $number_writeable .= trim($number) . "\t" .
-                                         trim($operator) . "\t".
-                                         trim($anvandare) . "\t";
+
+
+                    if(gettype($dom) == 'boolean'){
+                        createLog($key,trim($original_number),'Phone link error');
+                        return;
+                    }
+
+                    $element = $dom->find('meta', 3);
+
+                    $csrf = explode('"', $element);
+
+                    $csrf = $csrf[3] ?? '';
+
+                    $numbers = [];
+                    $number_writeable = '';
+
+                    foreach($dom->find('.inner phone-number-table') as $key => $element){
+                        
+                        $attr = ($element->attr);
+                        $numbers_array = $attr["v-bind:numbers"];
+
+                        $json = (json_decode($numbers_array));
+
+                        foreach ($json as $key => $value) {
+                            $number    = $value->display;
+                            $anvandare = $value->name;
+                            $id        = $value->number;
+
+
+                            if($number)
+                                $operator = getOperatorInfo($number, $csrf, $id);
+
+                            $number_writeable .= trim($number) . "\t" .
+                                                 trim($operator) . "\t".
+                                                 trim($anvandare) . "\t";
+                        }
+
+                        
+                    }
 
                 }
 
-
-                // if (strpos($result, 'bostadsrätt') !== false) {
-                //     $living_type = 'bostadsrätt';
-                // }
-                // else{
-                //     createLog($key,trim($original_number),'third loop error');
-                //     return;
-                // }
                 
             }
             else if(!$found){
@@ -281,7 +295,6 @@ use HeadlessChromium\BrowserFactory;
         else{
             
             createLog($key,trim($original_number),'Proxy or Scraper not working');
-            // sleep(10);
             return;
         
         }
@@ -295,6 +308,7 @@ use HeadlessChromium\BrowserFactory;
 
             $txt = trim($original_number) . "\t" .
                    trim($company_name) . "\t" .
+                   trim($ort) . "\t" .
                    trim($company_number) . "\t" .
                    trim($address) . "\t" .
                    trim($number_writeable) . "\t";
