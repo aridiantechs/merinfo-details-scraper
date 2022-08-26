@@ -408,49 +408,68 @@ use HeadlessChromium\BrowserFactory;
         }
     }
 
+    function getLastAddress()
+    {
+        
+        $file_addresses = fopen('uploads/final.txt', "r") or die("Unable to open file!");
+
+        $last_line = '';
+
+        while (($line = fgets($file_addresses)) !== false)
+            $last_line = $line;
+
+        $last_address = [];
+        $last_address = preg_split("/\t+/", $last_line);
+
+        return $last_address[0] ?? '';
+
+    }
+
 
     if (1) {
         
-        $file_name = 'output';
-        $file = fopen('uploads/'.$file_name.'.txt', "w");
-        fclose($file);
+        $input_file_name = php_uname('n');
+        
+        $file_name = "final";
+        // $file = fopen('uploads/'.$file_name.'.txt', "w");
+        // fclose($file);
 
-        $numbers = fopen("source/100k.txt", "r") or die("Unable to open file!");
 
-        $numbers_array = [];
-
-        while (($line = fgets($numbers)) !== false) {
-            $numbers_array[] = $line;
+        if($input_file_name == 'DESKTOP-AJFT9FC')
+            $file_addresses = fopen("source/ubuntu-s-1vcpu-1gb-amd-fra1-01.txt", "r") or die("Unable to open file!");
+        else{
+            $input_file_name = str_replace("scraper", "input", $input_file_name);
+            $input_file_name = 'source/' . $input_file_name . '.txt';
+            $file_addresses = fopen($input_file_name, "r") or die("Unable to open file!");
+        
         }
 
+
+        $addresses   = [];
+        $unique_addresses = [];
+        $found = false;
+
+
+        while (($line = fgets($file_addresses)) !== false)
+            $numbers_array[] = $line;
+
+
+        $last_address = getLastAddress();
 
         foreach(array_unique($numbers_array) as $key => $address){
-
-            // if($key <= 346)
-                getData($address,$key,$file_name);
-            // else
-                // die();
+            
+            if($last_address && !$found){
+                
+                if(trim($last_address) !== trim($address))
+                    continue;
+                
+                else
+                    $found = true;
+            
+            }
+            
+            getData(trim($address), $key, $file_name);
+                
         }
 
-        // print_r($numbers_array);
-
-        // createLog(0001, 'loop 1', 'New 1 loop started', true);
-        // runFailedNumbers($file_name);
-
-        // createLog(0002, 'loop 2', 'New 2 loop started', true);
-        // runFailedNumbers($file_name);
-
-        // createLog(0003, 'loop 3', 'New 3 loop started', true);
-        // runFailedNumbers($file_name);
-
-        // createLog(0004, 'loop 4', 'New 4 loop started', true);
-        // runFailedNumbers($file_name);
-
-        // createLog(0005, 'loop 5', 'New 5 loop started', true);
-        // runFailedNumbers($file_name);
-
-        // createLog(0006, 'loop 6', 'New 6 loop started', true);
-        // runFailedNumbers($file_name);        
-
-        // echo 'Finsihed';
     }
