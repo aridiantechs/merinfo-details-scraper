@@ -14,8 +14,6 @@ use HeadlessChromium\BrowserFactory;
     {
         $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
 
-        // $url = urlencode('https://www.amazon.com/dp/B00JITDVD2');
-
         $options = array(
     
             CURLOPT_CUSTOMREQUEST  => "GET",        //set request type post or get
@@ -107,11 +105,10 @@ use HeadlessChromium\BrowserFactory;
                         
 
         return $phone;
-
-        
     }
 
-    function headLessRequest($url){
+    function headLessRequest($url)
+    {
 
         $browserCommand = 'google-chrome';
 
@@ -187,42 +184,36 @@ use HeadlessChromium\BrowserFactory;
                     return;
                 }
 
-                // Get Token
-
-                $token = '';
-                foreach($dom->find('.col.mb-4') as $element){
-                    $dom3 = str_get_html($element);
-
-                    if(trim($dom3->find('h3', 0)->plaintext) == 'Lön och anmärkning'){
-                        $url = $dom3->find('a', 0)->href;
-                        $token = explode('/', $url);
-                        $token = end($token);
-                    }
-                }
-
+                // echo $token;
 
                 foreach($dom->find('.inner') as $element){
 
                     $dom1 = str_get_html($element);
 
+                    // echo $dom1->find('h3', 0)->plaintext;
+
                     if(trim($dom1->find('h3', 0)->plaintext) == 'Bolagsinformation'){
 
                         foreach($dom1->find('table tr') as $key => $element){
 
-                            if($key > 4)
-                                break;
-
                             $dom2 = str_get_html($element);
-
+                        
                             if(trim($dom2->find('td', 0)->plaintext) == 'Org.nummer:')
                                 $org_number = $dom2->find('td', 1)->plaintext;
 
-                            if(trim($dom2->find('td', 0)->plaintext) == 'Ordförande:')
-                                $president = $dom2->find('td', 1)->plaintext;
+                            if(trim($dom2->find('td', 0)->plaintext) == 'Ordförande:'){
+                                $president    = $dom2->find('td', 1)->plaintext;
+                                $company_link = $dom2->find('td a', 0)->href;
+                            }
+
+                            if(trim($dom2->find('td', 0)->plaintext) == 'Styrelseledamot:'){
+                                $president    = $dom2->find('td', 1)->plaintext;
+                                $company_link = $dom2->find('td a', 0)->href;
+                            }
 
                             
-                            if(trim($dom2->find('td', 0)->plaintext) == 'E-post:')
-                                $email = $dom2->find('td', 1)->plaintext;
+                            // if(trim($dom2->find('td', 0)->plaintext) == 'E-post:')
+                            //     $email = $dom2->find('td', 1)->plaintext;
 
                             
                             if(trim($dom2->find('td', 0)->plaintext) == 'Hemsida:')
@@ -230,19 +221,44 @@ use HeadlessChromium\BrowserFactory;
                             
                         }
                     }
+
                 }
 
-                $element = $dom->find('meta[name="csrf-token"]', 0);
+                if($company_link){
+                    
+                    $result = get_web_page($company_link);
+                    $html   = $result['content'];
+                    $dom    = str_get_html($html);
 
-                $csrf = $element->content ?? '';
+                    if(gettype($dom) == 'boolean' || $dom == ''){
+                        createLog($key,trim($original_number),'Company not found');
+                        return;
+                    }
 
-                $phone = '';
 
-                if($token && $csrf)
-                    $phone = getDescriptionInfo('https://www.merinfo.se/api/v1/people/' . $token . '/description' , $csrf);
+                    // Get Token
 
-                
+                    $token = '';
+                    foreach($dom->find('.col.mb-4') as $element){
+                        $dom3 = str_get_html($element);
 
+                        if(trim($dom3->find('h3', 0)->plaintext) == 'Lön och anmärkning'){
+                            $url = $dom3->find('a', 0)->href;
+                            $token = explode('/', $url);
+                            $token = end($token);
+                        }
+                    }
+
+                    $element = $dom->find('meta[name="csrf-token"]', 0);
+
+                    $csrf = $element->content ?? '';
+
+                    $phone = '';
+
+                    if($token && $csrf)
+                        $phone = getDescriptionInfo('https://www.merinfo.se/api/v1/people/' . $token . '/description' , $csrf);
+
+                }
                 
             }
             else if(!$found){
@@ -270,8 +286,8 @@ use HeadlessChromium\BrowserFactory;
                     .trim($org_number)      . "\t" 
                     .trim($president)       . "\t" 
                     .trim($phone)           . "\t" 
-                    // .trim($email)           . "\t" 
-                    // .trim($website)         . "\t"
+                    .trim($email)           . "\t" 
+                    .trim($website)         . "\t"
                    ;
 
             $myfile = fopen('./uploads/'.$file_name.'.txt', "a") or die("Unable to open file!");
@@ -280,10 +296,10 @@ use HeadlessChromium\BrowserFactory;
             fwrite($myfile, "\n");
             fclose($myfile);
         }
-
     }
 
-    function createLog($key,$address,$page_link, $address_found = false){
+    function createLog($key,$address,$page_link, $address_found = false)
+    {
         
         $myfile = fopen('./logs/log.txt', "a") or die("Unable to open file!");
 
@@ -313,7 +329,8 @@ use HeadlessChromium\BrowserFactory;
         }
     }
 
-    function handleFailedAddresses($dom, $html, $key, $address){
+    function handleFailedAddresses($dom, $html, $key, $address)
+    {
 
         foreach($dom->find('.h2') as $element){
             
@@ -342,11 +359,11 @@ use HeadlessChromium\BrowserFactory;
             createLog($key,$address,'Unknown Error');
 
         }
-
     }
 
 
-    function runFailedNumbers($file_name){
+    function runFailedNumbers($file_name)
+    {
 
         $failed_addresses = fopen("logs/failed.txt", "r") or die("Unable to open file!");
 
@@ -383,7 +400,6 @@ use HeadlessChromium\BrowserFactory;
         $last_address = preg_split("/\t+/", $last_line);
 
         return $last_address[0] ?? '';
-
     }
 
 
